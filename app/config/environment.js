@@ -1,7 +1,12 @@
-import loadConfigFromMeta from '@embroider/config-meta-loader';
+// import loadConfigFromMeta from '@embroider/config-meta-loader';
 import { assert } from '@ember/debug';
 
-const config = loadConfigFromMeta('ssg-tests');
+// const config = loadConfigFromMeta('ssg-tests');
+
+const config = {
+  modulePrefix: 'ssg-tests',
+  locationType: 'history',
+}
 
 assert(
   'config is not an object',
