@@ -1,15 +1,28 @@
 import { readFile, writeFile } from 'fs/promises';
-import { join } from 'path';
 import SimpleDOM from 'simple-dom/dist/commonjs/es5/index.js';
 
-const { default: App } = await import('./dist/app.js.mjs');
+import Module from "node:module";
+
+const require = Module.createRequire(import.meta.url);
+
+global.FastBoot = {
+  require(thing) {
+    require(thing)
+  }
+}
+
+const { default: App } = await import('./dist-ssr/app.mjs');
 const HTMLSerializer = new SimpleDOM.HTMLSerializer(SimpleDOM.voidMap);
 const wrapperHTML = await readFile('./dist/index.html', 'utf8');
 
 const appHtml = await render('/', App);
 
 
-const outputHTML = wrapperHTML.replace('<body>', `<body>${appHtml}`);
+
+const outputHTML = wrapperHTML.replace('<body>', `<body>
+  <script type="x/boundary" id="fastboot-body-start"></script>
+  ${appHtml}
+  <script type="x/boundary" id="fastboot-body-end">`);
 
 await writeFile('dist/index.html', outputHTML);
 

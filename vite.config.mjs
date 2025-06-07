@@ -4,14 +4,8 @@ import { babel } from '@rollup/plugin-babel';
 
 export default defineConfig({
   build: {
-    ssr: true,
-    rollupOptions: {
-      input: {
-        'app.js': 'app/app.js',
-        'index.html': 'index.html'
-      }
-    },
-    emitAssets: true,
+    ssr: process.env.BUILD_SSR ? 'app/app.js' : false,
+    outDir: process.env.BUILD_SSR ? 'dist-ssr' : 'dist',
     minify: false,
   },
   ssr: {
