@@ -11,20 +11,15 @@ global.FastBoot = {
   }
 }
 
+import Result from './result.mjs';
+
 const { default: App } = await import('./dist-ssr/app.mjs');
-const HTMLSerializer = new SimpleDOM.HTMLSerializer(SimpleDOM.voidMap);
 const wrapperHTML = await readFile('./dist/index.html', 'utf8');
 
-const appHtml = await render('/', App);
+const result = await render('/', App);
 
-
-
-const outputHTML = wrapperHTML.replace('<body>', `<body>
-  <script type="x/boundary" id="fastboot-body-start"></script>
-  ${appHtml}
-  <script type="x/boundary" id="fastboot-body-end">`);
-
-await writeFile('dist/index.html', outputHTML);
+result._finalizeHTML();
+await writeFile('dist/index.html', await result.html());
 
 
 function buildBootOptions() {
@@ -45,8 +40,7 @@ async function render(url, App) {
   });
   let bootOptions = buildBootOptions();
   await instance.visit(url, bootOptions);
-  let html = await HTMLSerializer.serializeChildren(bootOptions.document.body);
-  return html;
+  return new Result(bootOptions.document, wrapperHTML, {})
 }
 
 
