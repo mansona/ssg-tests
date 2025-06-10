@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import SimpleDOM from 'simple-dom/dist/commonjs/es5/index.js';
 import { join } from 'path';
 
@@ -21,6 +21,7 @@ async function preRender(path) {
   const result = await render(path, App);
 
   result._finalizeHTML();
+  await mkdir(join('dist', path), { recursive: true });
   await writeFile(join('dist', path, 'index.html'), await result.html());
 }
 
@@ -46,7 +47,7 @@ async function render(url, App) {
   return new Result(bootOptions.document, wrapperHTML, {})
 }
 
-const routesToPrerender = ['/'];
+const routesToPrerender = ['/', '/face'];
 
 for (const route of routesToPrerender) {
   await preRender(route);
