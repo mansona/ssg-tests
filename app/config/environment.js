@@ -1,11 +1,14 @@
 // import loadConfigFromMeta from '@embroider/config-meta-loader';
 import { assert } from '@ember/debug';
 
+// TODO there is something strange with config in SSG
 // const config = loadConfigFromMeta('ssg-tests');
 
 const config = {
   modulePrefix: 'ssg-tests',
   locationType: 'history',
+  rootURL: '/',
+  APP: {},
 }
 
 assert(

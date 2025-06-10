@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'fs/promises';
 import SimpleDOM from 'simple-dom/dist/commonjs/es5/index.js';
+import { join } from 'path';
 
 import Module from "node:module";
 
@@ -16,10 +17,12 @@ import Result from './result.mjs';
 const { default: App } = await import('./dist-ssr/app.mjs');
 const wrapperHTML = await readFile('./dist/index.html', 'utf8');
 
-const result = await render('/', App);
+async function preRender(path) {
+  const result = await render(path, App);
 
-result._finalizeHTML();
-await writeFile('dist/index.html', await result.html());
+  result._finalizeHTML();
+  await writeFile(join('dist', path, 'index.html'), await result.html());
+}
 
 
 function buildBootOptions() {
@@ -43,15 +46,8 @@ async function render(url, App) {
   return new Result(bootOptions.document, wrapperHTML, {})
 }
 
+const routesToPrerender = ['/'];
 
-//  for (const url of routesToPrerender) {
-//     const [appHtml, preloadLinks] = await render(url, manifest)
-
-//     const html = template
-//       .replace(`<!--preload-links-->`, preloadLinks)
-//       .replace(`<!--app-html-->`, appHtml)
-
-//     const filePath = `dist/static${url === '/' ? '/index' : url}.html`
-//     fs.writeFileSync(toAbsolute(filePath), html)
-//     console.log('pre-rendered:', filePath)
-//   }
+for (const route of routesToPrerender) {
+  await preRender(route);
+}
